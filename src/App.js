@@ -1,18 +1,30 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import Dashboard from './Dashboard';
-import './App.css'; // Only need to import once
+import React, { useState, useEffect } from 'react';
+import Header from './Header';  // Ensure the import path is correct
+import ActivityForm from './ActivityForm';
+import ActivityList from './ActivityList';
 
 function App() {
+  const [activities, setActivities] = useState(() => {
+    const savedActivities = localStorage.getItem('activities');
+    return savedActivities ? JSON.parse(savedActivities) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('activities', JSON.stringify(activities));
+  }, [activities]);
+
+  const addActivity = activity => {
+    setActivities(prevActivities => [...prevActivities, activity]);
+  };
+
   return (
-    <Router>
-      <div className="App">
-        <Switch>
-          <Route path="/" exact component={Dashboard} />
-          {/* You can add more routes if you have other pages */}
-        </Switch>
+    <div className="App">
+      <Header />  {/* Now the Header component should render its content */}
+      <div className="container mx-auto mt-4 px-4">
+        <ActivityForm addActivity={addActivity} />
+        <ActivityList activities={activities} />
       </div>
-    </Router>
+    </div>
   );
 }
 
